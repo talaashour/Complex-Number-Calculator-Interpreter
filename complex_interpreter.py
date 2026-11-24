@@ -6,14 +6,6 @@ from fractions import Fraction
 class ParseError(Exception):
     pass
 
-
-# ---------------------------------------------------------------- SCANNER
-# STEP 1: adapted from the ad-hoc scanner on slide 20.
-# Kept: skip whitespace, single-character tokens, digits -> number,
-# letters -> read the word, else announce an error.
-# Dropped: ':=', '/*' comments, decimal points, read/write keywords.
-# Added: the single letter 'i' as the IMAG token, and the Unicode dash.
-
 class Token:
     def __init__(self, kind, text, pos):
         self.kind, self.text, self.pos = kind, text, pos
@@ -63,14 +55,7 @@ class Scanner:
                          f"illegal character '{c}'")
 
 
-# ----------------------------------------------------------------- PARSER
-# STEP 2: adapted from the recursive descent parser on slide 41.
-# Same shape: one procedure per non-terminal, 'match' consumes the expected
-# token, 'case input_token' becomes if/elif, and the 'otherwise' branch
-# becomes an informative parse error.
-# STEP 3: each procedure also RETURNS the value (this is the interpreter).
-# The *_tail procedures receive the left operand so that + - * / stay
-# left-associative.
+
 
 NAMES = {'LPAREN': "'('", 'RPAREN': "')'", 'PLUS': "'+'", 'MINUS': "'-'",
          'TIMES': "'*'", 'DIV': "'/'", 'NUMBER': 'a number',
@@ -183,8 +168,8 @@ class Parser:
         return Complex(real, imag)
 
 
-# ------------------------------------------------------------ COMPLEX TYPE
-# STEP 4: the arithmetic. Fractions keep division exact.
+# ------------------------------------------------------------ COMPLEX TYPE#
+
 
 class Complex:
     def __init__(self, re, im):
@@ -212,8 +197,7 @@ class Complex:
         return f"({self.re} {sign} {abs(self.im)}i)"
 
 
-# ------------------------------------------------------------------- DRIVER
-# STEP 5: read a line, run the parser, print the value or the error.
+# ------------------------------------------------------------------- DRIVER#
 
 def evaluate(line):
     try:
