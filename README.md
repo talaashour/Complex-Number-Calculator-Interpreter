@@ -1,9 +1,8 @@
 # Complex-Number-Calculator-Interpreter
 Specifications of your project topic
-"""
-Interpreter for expressions over complex numbers.
 
-Grammar (LL(1), left recursion removed as in Figure 2.17):
+Interpreter for expressions over complex numbers.
+Grammar (LL(1), left recursion 
 
     program    -> expr $$
     expr       -> term expr_tail
@@ -20,7 +19,7 @@ Grammar (LL(1), left recursion removed as in Figure 2.17):
 Because every expression starts with '(', one token of lookahead after
 consuming '(' tells us whether we have a grouped expression or a complex
 number literal.
-"""
+
 
 Description of the implementation
 
