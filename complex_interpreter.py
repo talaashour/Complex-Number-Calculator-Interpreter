@@ -6,6 +6,7 @@ from fractions import Fraction
 class ParseError(Exception):
     pass
 
+
 class Token:
     def __init__(self, kind, text, pos):
         self.kind, self.text, self.pos = kind, text, pos
@@ -16,7 +17,7 @@ class Token:
 
 SINGLE = {'(': 'LPAREN', ')': 'RPAREN', '+': 'PLUS', '-': 'MINUS',
           '*': 'TIMES', '/': 'DIV',
-          '\u2013': 'MINUS', '\u2212': 'MINUS'}      # en-dash / minus sign
+          '\u2013': 'MINUS', '\u2212': 'MINUS'}     
 
 
 class Scanner:
@@ -31,18 +32,18 @@ class Scanner:
         if self.i >= len(t):
             return Token('EOF', '$$', self.i)
 
-        start, c = self.i, t[self.i]
+        start, cur_char = self.i, t[self.i]
 
-        if c in SINGLE:                                # single-char tokens
+        if cur_char in SINGLE:                                # single-char tokens
             self.i += 1
-            return Token(SINGLE[c], c, start)
+            return Token(SINGLE[cur_char], cur_char, start)
 
-        if c.isdigit():                                # read digits -> number
+        if cur_char.isdigit():                                # read digits -> number
             while self.i < len(t) and t[self.i].isdigit():
                 self.i += 1
             return Token('NUMBER', t[start:self.i], start)
 
-        if c.isalpha():                                # read letters
+        if cur_char.isalpha():                                # read letters
             while self.i < len(t) and t[self.i].isalpha():
                 self.i += 1
             word = t[start:self.i]
@@ -52,9 +53,7 @@ class Scanner:
                              f"unknown word '{word}' (only 'i' is allowed)")
 
         raise ParseError(f"Lexical error at position {start}: "
-                         f"illegal character '{c}'")
-
-
+                         f"illegal character '{cur_char}'")
 
 
 NAMES = {'LPAREN': "'('", 'RPAREN': "')'", 'PLUS': "'+'", 'MINUS': "'-'",
@@ -172,30 +171,29 @@ class Parser:
 
 
 class Complex:
-    def __init__(self, re, im):
-        self.re, self.im = Fraction(re), Fraction(im)
+    def __init__(self, real, imaginary):
+        self.real, self.imaginary = Fraction(real), Fraction(imaginary)
 
-    def __add__(self, o): return Complex(self.re + o.re, self.im + o.im)
-    def __sub__(self, o): return Complex(self.re - o.re, self.im - o.im)
+    def __add__(self, o): return Complex(self.real + o.real, self.imaginary + o.imaginary)
+    def __sub__(self, o): return Complex(self.real - o.real, self.imaginary - o.imaginary)
 
     def __mul__(self, o):
-        return Complex(self.re * o.re - self.im * o.im,
-                       self.re * o.im + self.im * o.re)
+        return Complex(self.real * o.real - self.imaginary * o.imaginary,
+                       self.real * o.imaginary + self.imaginary * o.real)
 
     def __truediv__(self, o):
-        d = o.re ** 2 + o.im ** 2
-        return Complex((self.re * o.re + self.im * o.im) / d,
-                       (self.im * o.re - self.re * o.im) / d)
+        denom = o.real ** 2 + o.imaginary ** 2
+        return Complex((self.real * o.real + self.imaginary * o.imaginary) / denom,
+                       (self.imaginary * o.real - self.real * o.imaginary) / denom)
 
     def __eq__(self, o):
         if isinstance(o, int):
-            return self.re == o and self.im == 0
-        return self.re == o.re and self.im == o.im
+            return self.real == o and self.imaginary == 0
+        return self.real == o.real and self.imaginary == o.imaginary
 
     def __str__(self):                                  # output as (a ± bi)
-        sign = '-' if self.im < 0 else '+'
-        return f"({self.re} {sign} {abs(self.im)}i)"
-
+        sign = '-' if self.imaginary < 0 else '+'
+        return f"({self.real} {sign} {abs(self.imaginary)}i)"
 
 # ------------------------------------------------------------------- DRIVER#
 
